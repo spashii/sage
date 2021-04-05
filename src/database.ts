@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+import * as mysql from 'mysql2';
 
 const pool = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
@@ -14,4 +14,6 @@ pool.on('acquire', (connection) =>
 	console.log('connection %d acquired', connection.threadId)
 );
 
-module.exports = pool.promise();
+export default pool.promise();
+
+export { pool };
