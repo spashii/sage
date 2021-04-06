@@ -10,10 +10,6 @@ const pool = mysql.createPool({
 	queueLimit: 0,
 });
 
-pool.on('acquire', (connection) =>
-	console.log('connection %d acquired', connection.threadId)
-);
-
 export default pool.promise();
 
 export { pool };

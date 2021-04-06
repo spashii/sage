@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { verifyAccessToken } from 'src/entities/user/jwt';
+import { verifyAccessToken } from '../entities/user/jwt';
 
 export default async function protectedRoute(
 	req: Request,
