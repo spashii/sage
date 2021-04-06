@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyAccessToken } from 'src/entities/user/jwt';
 
 export default async function protectedRoute(
 	req: Request,
@@ -12,9 +12,8 @@ export default async function protectedRoute(
 	}
 
 	try {
-		const payload = jwt.verify(token, process.env.JWT_SECRET!);
-		console.log(payload);
-		req.body.__user__ = payload;
+		const payload = verifyAccessToken(token);
+		req.body.authorization = payload;
 		return next();
 	} catch (err) {
 		return res.status(400).json({ message: 'Invalid token' });

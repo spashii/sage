@@ -1,18 +1,17 @@
 import * as express from 'express';
-import db from './database';
+import morgan from 'morgan';
 
 import dotenv from 'dotenv';
-
 dotenv.config();
 
 const app = express.default();
-app.set('view engine', 'ejs');
 
 // import routers
-import user from './routes/user';
+import user from './entities/user/router';
 import protectedRoute from './middleware/protectedRoute';
 
 // middleware
+app.use(morgan('dev'));
 app.use(express.json());
 app.use('/api/user', user);
 
