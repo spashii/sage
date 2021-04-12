@@ -21,14 +21,18 @@ export function verifyAccessToken(token: string) {
 	return jwt.verify(token, process.env.JWT_SECRET!);
 }
 
-export function generateRefreshToken(payload: { id: string }) {
-	return jwt.sign({ id: payload.id }, process.env.JWT_REFRESH_SECRET!, {
-		expiresIn: '7d',
-	});
+export function generateRefreshToken(payload: { id: any; tokenVersion?: any }) {
+	return jwt.sign(
+		{ id: payload.id, tv: payload.tokenVersion },
+		process.env.JWT_REFRESH_SECRET!,
+		{
+			expiresIn: '7d',
+		}
+	);
 }
 
 export function setRefreshToken(
-	payload: { id: string },
+	payload: { id: any; tokenVersion?: any },
 	response: Response
 ): string {
 	const token = generateRefreshToken(payload);
@@ -39,6 +43,6 @@ export function setRefreshToken(
 	return token;
 }
 
-export function verifyRefreshToken(token: string): { id: string } {
+export function verifyRefreshToken(token: string) {
 	return jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as any;
 }
