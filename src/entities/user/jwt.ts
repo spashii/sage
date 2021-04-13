@@ -36,6 +36,7 @@ export function setRefreshToken(
 	response: Response
 ): string {
 	const token = generateRefreshToken(payload);
+	// aid is just random
 	response.cookie('aid', token, {
 		httpOnly: true,
 		expires: new Date(Date.now() + 604800000),

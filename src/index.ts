@@ -17,22 +17,27 @@ app.use('/api/user', user);
 app.use('/api/listing', listing);
 
 import db from './database';
-import protectedRoute from './middleware/protectedRoute';
-
+import protectedRouteWithUnauthorizedHandler from './middleware/protectedRouteWithUnauthorizedHandler';
 (() => {
-	app.post('/get-time', async (_req, res) => {
+	app.get('/time', async (_req, res) => {
 		const [rows] = await db.query('SELECT id FROM __test');
 		res.json({ rows });
 	});
 
-	app.post('/add-time', protectedRoute, async (req, res) => {
-		const [rows] = await db.query('INSERT INTO __test SET ?', {
-			id: new Date(),
-		});
-		res.json({ rows, user: req.body.__user__ });
-	});
+	app.post(
+		'/time',
+		protectedRouteWithUnauthorizedHandler((_req, res) => {
+			res.send('unauth handled');
+		}),
+		async (req, res) => {
+			const [rows] = await db.query('INSERT INTO __test SET ?', {
+				id: new Date(),
+			});
+			res.json({ rows, user: req.body.authorization });
+		}
+	);
 })();
 
 app.listen(3000, async () => {
-	console.log('server has started');
+	console.log('Server has started');
 });

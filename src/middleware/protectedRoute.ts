@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../entities/user/jwt';
 
-export default async function protectedRoute(
+export default function protectedRoute(
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -16,6 +16,6 @@ export default async function protectedRoute(
 		req.body.authorization = payload;
 		return next();
 	} catch (err) {
-		return res.status(400).json({ message: 'Invalid token' });
+		return res.status(400).json({ message: `Invalid token(${err.message})` });
 	}
 }

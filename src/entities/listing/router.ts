@@ -2,13 +2,28 @@ import * as express from 'express';
 
 const router = express.Router();
 
-import { validate } from '../../middleware/validation';
-import protectedRoute from '../../middleware/protectedRoute';
-import { getListing, getAllListings, addListing } from '.';
+import {
+	protectedRoute,
+	protectedRouteWithUnauthorizedHandler,
+	validate,
+} from '../../middleware';
+
+import {
+	getListing,
+	getAllListings,
+	addListing,
+	getListingsByUser,
+	getAllListingsUnauthorized,
+} from '.';
 import { addListingSchema } from './model';
 
-router.get('/', getAllListings);
-router.get('/:id', protectedRoute, getListing);
+router.get(
+	'/',
+	protectedRouteWithUnauthorizedHandler(getAllListingsUnauthorized),
+	getAllListings
+);
 router.post('/', protectedRoute, validate(addListingSchema), addListing);
+router.get('/:id', protectedRoute, getListing);
+router.get('/by-user/:id', protectedRoute, getListingsByUser);
 
 export default router;

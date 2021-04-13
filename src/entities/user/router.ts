@@ -5,8 +5,7 @@ const router = express.Router();
 
 import { register, login, refreshToken, revokeRefreshToken } from '.';
 import { loginSchema, registerSchema } from './model';
-import { validate } from '../../middleware/validation';
-import protectedRoute from '../../middleware/protectedRoute';
+import { protectedRoute, validate } from '../../middleware';
 
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);

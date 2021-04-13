@@ -100,7 +100,6 @@ async function refreshToken(req: Request, res: Response) {
 		// returns new access token
 		return res.status(200).json({ accessToken });
 	} catch (err) {
-		console.log(err);
 		return res
 			.status(400)
 			.json({ message: `Refresh token is invalid (${err.message})` });
