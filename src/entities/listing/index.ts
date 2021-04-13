@@ -55,6 +55,70 @@ async function getListing(req: Request, res: Response) {
 	}
 }
 
+async function updateListing(req: Request, res: Response) {
+	const { id } = req.params;
+
+	const { title, description, imageUrl, authorization } = req.body;
+
+	const payload = {
+		title,
+		description,
+		imageUrl,
+	};
+
+	// removing null entries from the payload object, to avoid null mutation
+	const cleanPayload = Object.keys(payload)
+		.filter((k) => payload[k] != null)
+		.reduce((a, k) => ({ ...a, [k]: payload[k] }), {});
+
+	try {
+		// only listing owner should be able to update
+		const [
+			rows,
+		]: any = await db.query('UPDATE listing SET ? WHERE id=? AND userId=?', [
+			cleanPayload,
+			id,
+			authorization.id,
+		]);
+
+		if (rows.affectedRows === 1)
+			return res.status(200).json({ message: 'Updated successfully' });
+		else return res.status(400).json({ message: 'Update unsuccessful' });
+
+		// get the listing from the query result
+	} catch (err) {
+		return res
+			.status(500)
+			.json({ message: `Some error occurred(${err.message})` });
+	}
+}
+
+async function deleteListing(req: Request, res: Response) {
+	const { id } = req.params;
+
+	const { authorization } = req.body;
+
+	try {
+		// only listing owner should be able to delete
+		const [
+			rows,
+		]: any = await db.query('DELETE FROM listing WHERE id=? AND userId=?', [
+			id,
+			authorization.id,
+		]);
+
+		if (rows.affectedRows === 1)
+			return res.status(200).json({ message: 'Deleted successfully' });
+		else return res.status(400).json({ message: 'Delete unsuccessful' });
+
+		// get the listing from the query result
+	} catch (err) {
+		return res
+			.status(500)
+			.json({ message: `Some error occurred(${err.message})` });
+	}
+}
+
 async function getListingsByUser(req: Request, res: Response) {
 	const { id } = req.params;
 
@@ -130,6 +194,8 @@ export {
 	getAllListingsUnauthorized,
 	getAllListings,
 	getListing,
+	updateListing,
+	deleteListing,
 	getListingsByUser,
 	addListing,
 };

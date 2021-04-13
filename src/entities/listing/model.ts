@@ -23,3 +23,10 @@ export const addListingSchema = Joi.object({
 	bidExpiresOn: Joi.date(),
 	authorization: Joi.object(),
 });
+
+export const updateListingSchema = Joi.object({
+	title: Joi.string().min(3).max(64),
+	description: Joi.string().max(256),
+	imageUrl: Joi.string().max(128),
+	authorization: Joi.object(),
+});
