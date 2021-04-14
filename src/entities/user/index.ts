@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import db from '../../database';
 import { setAccessToken, setRefreshToken, verifyRefreshToken } from './jwt';
 import { getUserData, updateUserTokenVersion, IUser } from './model';
+import { omit, genericServerErrorResponse, genericInvalidResponse } from '../../util';
 
 async function register(req: Request, res: Response) {
 	const { username, email, password } = req.body;
@@ -23,19 +24,13 @@ async function register(req: Request, res: Response) {
 	} catch (err) {
 		// duplicate entry error
 		if (err.code === 'ER_DUP_ENTRY') {
-			return res.status(400).json({
-				message: 'Account with same email/username already exists',
-			});
+			return genericInvalidResponse(res, 'Account with same email/username already exists');
 		}
 
-		return res
-			.status(500)
-			.json({ message: `Some error occurred(${err.message})` });
+		return genericServerErrorResponse(res, err);
 	}
 
-	return res
-		.status(200)
-		.json({ message: 'Registered successfully', id: user.id });
+	return res.status(200).json({ message: 'Registered successfully', id: user.id });
 }
 
 async function login(req: Request, res: Response) {
@@ -51,7 +46,7 @@ async function login(req: Request, res: Response) {
 
 	// if db doesn't contain the user
 	if (rows.length === 0) {
-		return res.status(400).json({ message: 'This account does not exist' });
+		return genericInvalidResponse(res, 'This account does not exist');
 	}
 
 	// get the user from the query result
@@ -60,7 +55,7 @@ async function login(req: Request, res: Response) {
 
 	// if password invalid
 	if (!passwordIsValid) {
-		return res.status(400).json({ message: 'Wrong Password' });
+		return genericInvalidResponse(res, 'Wrong Password');
 	}
 
 	// handling tokens
@@ -69,14 +64,14 @@ async function login(req: Request, res: Response) {
 
 	return res.status(200).json({
 		message: `Successful Login as ${user.username}`,
-		user: { ...user, password: '' },
+		user: { ...omit(user, ['password']) },
 	});
 }
 
 async function refreshToken(req: Request, res: Response) {
 	const token = req.cookies.aid;
 	if (!token) {
-		return res.status(400).json({ message: 'Refresh token not found' });
+		return genericInvalidResponse(res, 'Refresh token not found');
 	}
 
 	try {
@@ -88,9 +83,7 @@ async function refreshToken(req: Request, res: Response) {
 
 		// checking if refresh token version is current
 		if (user!.tokenVersion !== payload.tv) {
-			return res
-				.status(400)
-				.json({ message: 'Refresh token is invalid (version mismatch)' });
+			return genericInvalidResponse(res, 'Refresh token is invalid', new Error('version mismatch'));
 		}
 
 		// refresh the "refresh token"
@@ -100,22 +93,40 @@ async function refreshToken(req: Request, res: Response) {
 		// returns new access token
 		return res.status(200).json({ accessToken });
 	} catch (err) {
-		return res
-			.status(400)
-			.json({ message: `Refresh token is invalid (${err.message})` });
+		return genericInvalidResponse(res, 'Refresh token is invalid', err);
 	}
 }
 
 async function revokeRefreshToken(req: Request, res: Response) {
 	const { id } = req.body.authorization;
 
-	const success = await updateUserTokenVersion(id);
-
-	if (success) {
-		return res.status(200).json({ message: 'Successful' });
-	} else {
-		return res.status(400).json({ message: 'Unsuccessful' });
+	try {
+		await updateUserTokenVersion(id);
+		return res.status(200).json({ message: 'Successfully revoked refresh token' });
+	} catch (err) {
+		return genericInvalidResponse(res, 'Unsuccessful', err);
 	}
 }
 
-export { register, login, refreshToken, revokeRefreshToken };
+async function getMe(req: Request, res: Response) {
+	const { authorization } = req.body;
+
+	try {
+		const [userResult] = await db.query('SELECT * FROM user WHERE id=?', [authorization.id]);
+		const [listingResult] = await db.query('SELECT * FROM listing WHERE userId=? ORDER BY timestamp DESC', [
+			authorization.id,
+		]);
+		const [biddingResult] = await db.query('SELECT * FROM bidding WHERE userId=? ORDER BY timestamp DESC', [
+			authorization.id,
+		]);
+
+		// returns user details with all its listings and biddings
+		let user = { ...omit(userResult[0], ['password']), listings: listingResult, biddings: biddingResult };
+
+		return res.status(200).send(user);
+	} catch (err) {
+		return genericServerErrorResponse(res, err);
+	}
+}
+
+export { register, login, refreshToken, revokeRefreshToken, getMe };

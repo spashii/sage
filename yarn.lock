@@ -58,6 +58,11 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/async-lock@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/async-lock/-/async-lock-1.1.2.tgz#cbc26a34b11b83b28f7783a843c393b443ef8bef"
+  integrity sha512-j9n4bb6RhgFIydBe0+kpjnBPYumDaDyU8zvbWykyVMkku+c2CSu31MZkLeaBfqIwU+XCxlDpYDfyMQRkM0AkeQ==
+
 "@types/bcrypt@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-3.0.0.tgz#851489a9065a067cb7f3c9cbe4ce9bed8bba0876"
@@ -230,6 +235,11 @@ array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
   integrity sha1-ml9pkFGx5wczKPKgCJaLZOopVdI=
+
+async-lock@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/async-lock/-/async-lock-1.2.8.tgz#7b02bdfa2de603c0713acecd11184cf97bbc7c4c"
+  integrity sha512-G+26B2jc0Gw0EG/WN2M6IczuGepBsfR1+DtqLnyFSH4p2C668qkOCtEkGNVEaaNAVlYwEMazy1+/jnLxltBkIQ==
 
 balanced-match@^1.0.0:
   version "1.0.0"

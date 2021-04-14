@@ -9,12 +9,14 @@ const app = express.default();
 // import routers
 import user from './entities/user/router';
 import listing from './entities/listing/router';
+import bidding from './entities/bidding/router';
 
 // middleware
 app.use(morgan('dev'));
 app.use(express.json());
 app.use('/api/user', user);
 app.use('/api/listing', listing);
+app.use('/api/bidding', bidding);
 
 import db from './database';
 import protectedRouteWithUnauthorizedHandler from './middleware/protectedRouteWithUnauthorizedHandler';

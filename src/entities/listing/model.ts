@@ -11,7 +11,7 @@ export interface IListing {
 	isSold?: boolean;
 	isBiddable: boolean;
 	bidCurrentPrice?: number;
-	bidExpiresOn?: Date;
+	expiresOn?: Date;
 }
 
 export const addListingSchema = Joi.object({
@@ -20,7 +20,7 @@ export const addListingSchema = Joi.object({
 	imageUrl: Joi.string().max(128),
 	startingPrice: Joi.number().required(),
 	isBiddable: Joi.boolean().required(),
-	bidExpiresOn: Joi.date(),
+	expiresOn: Joi.date(),
 	authorization: Joi.object(),
 });
 
