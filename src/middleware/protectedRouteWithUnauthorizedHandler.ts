@@ -4,13 +4,10 @@ import { verifyAccessToken } from '../entities/user/jwt';
 export default function protectedRouteWithUnauthorizedHandler(
 	unauthorizedHandler: (req: Request, res: Response) => any
 ) {
-	return async function protectedRoute(
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) {
+	return async function protectedRoute(req: Request, res: Response, next: NextFunction) {
 		const token = req.header('Authorization');
 		if (!token) {
+			// forwarding to unauthorized handler
 			return unauthorizedHandler(req, res);
 		}
 

@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { response, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 export function generateAccessToken(payload: { id: string }): string {
@@ -8,10 +8,7 @@ export function generateAccessToken(payload: { id: string }): string {
 	return token;
 }
 
-export function setAccessToken(
-	payload: { id: string },
-	response: Response
-): string {
+export function setAccessToken(payload: { id: string }, response: Response): string {
 	const token = generateAccessToken(payload);
 	response.header('Authorization', token);
 	return token;
@@ -22,19 +19,12 @@ export function verifyAccessToken(token: string) {
 }
 
 export function generateRefreshToken(payload: { id: any; tokenVersion?: any }) {
-	return jwt.sign(
-		{ id: payload.id, tv: payload.tokenVersion },
-		process.env.JWT_REFRESH_SECRET!,
-		{
-			expiresIn: '7d',
-		}
-	);
+	return jwt.sign({ id: payload.id, tv: payload.tokenVersion }, process.env.JWT_REFRESH_SECRET!, {
+		expiresIn: '7d',
+	});
 }
 
-export function setRefreshToken(
-	payload: { id: any; tokenVersion?: any },
-	response: Response
-): string {
+export function setRefreshToken(payload: { id: any; tokenVersion?: any }, response: Response): string {
 	const token = generateRefreshToken(payload);
 	// aid is just random
 	response.cookie('aid', token, {
@@ -42,6 +32,13 @@ export function setRefreshToken(
 		expires: new Date(Date.now() + 604800000),
 	});
 	return token;
+}
+
+export function clearRefreshToken(response: Response) {
+	response.cookie('aid', '', {
+		httpOnly: true,
+		expires: new Date(Date.now() + 604800000),
+	});
 }
 
 export function verifyRefreshToken(token: string) {

@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 
 import db from '../../database';
-import { setAccessToken, setRefreshToken, verifyRefreshToken } from './jwt';
+import { clearRefreshToken, setAccessToken, setRefreshToken, verifyRefreshToken } from './jwt';
 import { getUserData, updateUserTokenVersion, IUser } from './model';
 import { omit, genericServerErrorResponse, genericInvalidResponse } from '../../util';
 
@@ -29,6 +29,10 @@ async function register(req: Request, res: Response) {
 
 		return genericServerErrorResponse(res, err);
 	}
+
+	// handling tokens
+	setAccessToken({ id: user.id }, res);
+	setRefreshToken({ id: user.id, tokenVersion: 0 }, res);
 
 	return res.status(200).json({ message: 'Registered successfully', id: user.id });
 }
@@ -129,4 +133,9 @@ async function getMe(req: Request, res: Response) {
 	}
 }
 
-export { register, login, refreshToken, revokeRefreshToken, getMe };
+async function logout(_req: Request, res: Response) {
+	clearRefreshToken(res);
+	return res.status(200).json({ message: 'Logout successful' });
+}
+
+export { register, login, logout, refreshToken, revokeRefreshToken, getMe };
