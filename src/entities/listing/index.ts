@@ -23,11 +23,21 @@ function getAllListings(auth: boolean) {
 	};
 }
 
+async function getAllListingsWithBidCountAndUserName(req: Request, res: Response) {
+	try {
+		const [rows] = await db.query(`SELECT * FROM listingBidCountUserNameView WHERE expiresOn >= NOW()`);
+		return res.status(200).send(rows);
+	} catch (err) {
+		return genericServerErrorResponse(res, err);
+	}
+}
+
 async function getListing(req: Request, res: Response) {
 	const { id } = req.params;
 
 	try {
-		const [rows]: any = await db.query('SELECT * FROM listing WHERE id=?', [id]);
+		// const [rows]: any = await db.query('SELECT * FROM listing WHERE id=?', [id]);
+		const [rows]: any = await db.query('SELECT * FROM listingBidCountUserNameView WHERE id=?', [id]);
 
 		// if db doesn't contain the listing
 		if (rows.length === 0) {
@@ -53,6 +63,7 @@ async function updateListing(req: Request, res: Response) {
 		imageUrl,
 	};
 
+	// TODO: make this a middleware
 	// removing null entries from the payload object, to avoid null mutation
 	const cleanPayload = Object.keys(payload)
 		.filter((k) => payload[k] != null)
@@ -175,11 +186,12 @@ async function addListing(req: Request, res: Response) {
 		return genericServerErrorResponse(res, err);
 	}
 
-	return res.status(200).json({ message: 'Added successfully', id: listing.id });
+	return res.status(200).json({ message: 'Added successfully', id: listing.id, listing });
 }
 
 export {
 	getAllListings,
+	getAllListingsWithBidCountAndUserName,
 	getListing,
 	updateListing,
 	deleteListing,

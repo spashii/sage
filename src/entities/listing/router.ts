@@ -6,6 +6,7 @@ import { protectedRoute, protectedRouteWithUnauthorizedHandler, validate } from 
 
 import {
 	getListing,
+	getAllListingsWithBidCountAndUserName,
 	getAllListings,
 	addListing,
 	getListingsByUser,
@@ -18,6 +19,8 @@ import { addListingSchema, updateListingSchema } from './model';
 router.get('/', protectedRouteWithUnauthorizedHandler(getAllListings(false)), getAllListings(true));
 // router.post('/', protectedRoute, validate(addListingSchema), addListing);
 router.post('/', protectedRoute, validate(addListingSchema), addListingStoredProc);
+
+router.get('/all', protectedRoute, getAllListingsWithBidCountAndUserName);
 
 router.get('/:id', protectedRoute, getListing);
 router.patch('/:id', protectedRoute, validate(updateListingSchema), updateListing);

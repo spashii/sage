@@ -1,4 +1,5 @@
 import * as express from 'express';
+import cors from 'cors';
 import morgan from 'morgan';
 
 import dotenv from 'dotenv';
@@ -12,6 +13,7 @@ import listing from './entities/listing/router';
 import bidding from './entities/bidding/router';
 
 // middleware
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use('/api/user', user);
