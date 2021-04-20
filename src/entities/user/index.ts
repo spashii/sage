@@ -117,7 +117,9 @@ async function getMe(req: Request, res: Response) {
 
 	try {
 		const [userResult] = await db.query('SELECT * FROM user WHERE id=?', [authorization.id]);
-		const [listingResult] = await db.query('SELECT * FROM listing WHERE userId=? ORDER BY timestamp DESC', [
+		const [
+			listingResult,
+		] = await db.query('SELECT * FROM listingBidCountUserNameView WHERE userId=? ORDER BY timestamp DESC', [
 			authorization.id,
 		]);
 		const [biddingResult] = await db.query('SELECT * FROM bidding WHERE userId=? ORDER BY timestamp DESC', [

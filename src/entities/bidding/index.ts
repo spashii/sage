@@ -32,9 +32,10 @@ async function getBiddings(req: Request, res: Response) {
 		// getting all the biddings
 		const [
 			biddings,
-		]: any = await db.query('SELECT id, userId, listingId, bid, timestamp FROM bidding WHERE listingId=?', [
-			listingId,
-		]);
+		]: any = await db.query(
+			'SELECT id, userId, listingId, bid, timestamp, username FROM biddingUsernameView WHERE listingId=?',
+			[listingId]
+		);
 
 		return res.status(200).send(biddings);
 	} catch (err) {
